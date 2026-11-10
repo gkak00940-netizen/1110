@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2c544">
+  <title>고객 문의 답장 도우미 · 샌드</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="workspace">
+    <section class="settings card" aria-labelledby="settings-title">
+      <div class="section-heading"><h2 id="settings-title">⚙️ 설정</h2><span id="connection" role="status">팀 코드를 저장해 주세요.</span></div>
+      <form id="settings-form" class="settings-form">
+        <label for="team-code">팀 코드<input id="team-code" type="password" autocomplete="off" spellcheck="false" placeholder="받으신 팀 코드를 입력하세요" maxlength="200"></label>
+        <button type="submit" id="save-team">저장 · 확인</button>
+      </form>
+      <p class="help">팀 코드는 이 브라우저에만 저장돼요. 공용 컴퓨터에서는 사용 후 지워 주세요.</p>
+      <button type="button" id="forget-team" class="quiet">저장된 팀 코드 지우기</button>
+    </section>
+
+    <header class="page-heading"><span class="brand">샌드</span><p class="eyebrow">고객의 마음에 정성껏 답해요</p><h1>고객 문의<br class="mobile-break"> 답장 도우미</h1><p>문의 내용을 붙여 넣으면 다정한 답장 초안을 준비해 드려요.</p></header>
+
+    <section class="principles" aria-label="샌드의 배송 원칙"><strong>답장에 함께 담는 배송 원칙</strong><ul><li>주문 후 3일 이내 배송</li><li>5만 원 이상 주문 시 배송비 무료</li><li>제주·산간지역 배송 불가</li></ul></section>
+
+    <div class="writing-grid">
+      <section class="card composer" aria-labelledby="inquiry-title">
+        <div class="section-heading"><h2 id="inquiry-title">고객 문의</h2><button type="button" id="example" class="quiet">예시 문의 넣기</button></div>
+        <label class="help" for="inquiry">받으신 문의를 아래에 붙여 넣어 주세요.</label>
+        <textarea id="inquiry" rows="9" maxlength="12000" placeholder="예: 유자샌드를 주문하고 싶어요. 배송은 얼마나 걸리나요?"></textarea>
+        <fieldset><legend>답장 말투</legend><label class="tone"><input type="radio" name="tone" value="정중하게" checked>정중하게 <span>친근하고 다정한 존댓말</span></label></fieldset>
+        <button type="button" id="generate" class="primary">만들기</button>
+        <p id="progress" class="help" role="status">입력한 내용은 자동으로 저장돼요.</p>
+      </section>
+
+      <section class="card result-card" aria-labelledby="result-title" aria-busy="false">
+        <div class="section-heading"><h2 id="result-title">답장 초안</h2><button type="button" id="copy" class="quiet" disabled>답장 복사</button></div>
+        <p id="request-error" class="error" role="alert" hidden></p>
+        <div id="result" class="reply-text" tabindex="0">이곳에 답장 초안이 나타나요.</div>
+        <p id="result-meta" class="help"></p>
+        <p class="review-note">고객에게 보내기 전에 내용이 맞는지 한 번 더 확인해 주세요.</p>
+      </section>
+    </div>
+
+    <section class="card history-section" aria-labelledby="history-title"><div class="section-heading"><h2 id="history-title">최근 답장 기록</h2><span class="help">최근 5개까지 보관해요</span></div><div id="history"></div></section>
+    <footer>샌드 · 좋은 농산물에 정성을 더합니다.</footer>
+  </main>
+</body>
+</html>

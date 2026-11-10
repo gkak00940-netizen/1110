@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4d35e">
+  <title>예약 관리표 · 샌드</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="workspace">
+    <a class="back-link screen-only" href="../">← 앱 목록</a>
+    <header class="toolbar">
+      <div><span class="brand">샌드</span><h1>예약 관리표</h1><p>손님과의 약속을 한눈에, 차근차근 챙겨 보세요.</p></div>
+      <button type="button" id="print" class="primary screen-only">인쇄</button>
+    </header>
+    <div class="today-bar"><strong id="today-label"></strong><span>유자샌드 1박스 · 12,000원</span></div>
+
+    <section class="card entry-card screen-only" aria-labelledby="entry-title">
+      <div class="section-heading"><h2 id="entry-title">새 예약 적기</h2><span id="save-status" class="help" role="status">이 브라우저에 자동 저장돼요.</span></div>
+      <form id="booking-form">
+        <div class="form-grid">
+          <label for="date">예약 날짜<input type="date" id="date" required></label>
+          <label for="time">예약 시간<input type="time" id="time" required step="60"></label>
+          <label for="guest">손님 이름<input type="text" id="guest" required maxlength="24" placeholder="예: 김○○" autocomplete="off"></label>
+          <label for="people">인원<input type="number" id="people" required min="1" max="999" step="1" value="1" inputmode="numeric"></label>
+          <label for="memo" class="memo-label">메모<textarea id="memo" rows="2" maxlength="200" placeholder="예: 유자샌드 1박스 방문 수령"></textarea></label>
+        </div>
+        <p id="draft-warning" class="warning" role="alert" hidden></p>
+        <div class="form-actions"><button type="submit" id="save-booking" class="primary">예약 추가</button><button type="button" id="cancel-edit" hidden>수정 취소</button><p class="help">같은 날짜·시간의 예약은 빨간색으로 알려드려요.</p></div>
+      </form>
+    </section>
+
+    <section class="summary" aria-label="예약 요약">
+      <div><span>오늘 예약</span><strong id="today-count">0건</strong></div>
+      <div><span>이번 주 예약</span><strong id="week-count">0건</strong></div>
+      <div><span>이번 주 손님</span><strong id="people-count">0명</strong></div>
+    </section>
+
+    <section class="card list-card" aria-labelledby="list-title">
+      <div class="section-heading"><div><h2 id="list-title">오늘 예약 목록</h2><p id="date-range" class="help"></p></div><button type="button" id="examples" class="screen-only">예시 데이터 5줄 넣기</button></div>
+      <div class="filters screen-only" role="group" aria-label="예약 조회 기간"><button type="button" data-filter="today" aria-pressed="true">오늘</button><button type="button" data-filter="week" aria-pressed="false">이번 주</button></div>
+      <p id="conflict-summary" class="warning" role="status" hidden></p>
+      <div id="empty" class="empty"><strong>아직 예약이 없어요.</strong><p>새 예약을 적거나 예시 데이터로 먼저 살펴보세요.</p></div>
+      <table id="booking-table" hidden>
+        <caption class="sr-only">선택한 기간의 예약 목록</caption>
+        <thead><tr><th scope="col">날짜 · 시간</th><th scope="col">손님</th><th scope="col">인원</th><th scope="col">메모</th><th scope="col" class="screen-only">관리</th></tr></thead>
+        <tbody id="booking-list"></tbody>
+      </table>
+      <p id="feedback" class="help screen-only" role="status"></p>
+      <button type="button" id="undo-delete" class="screen-only" hidden>방금 삭제한 예약 되돌리기</button>
+    </section>
+    <p class="bottom-help screen-only">이번 주는 월요일부터 일요일까지예요. 예시 이름과 연락처는 모두 가상 정보예요.</p>
+    <footer>샌드 · 좋은 농산물에 정성을 더합니다.</footer>
+  </main>
+</body>
+</html>
