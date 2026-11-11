@@ -73,16 +73,17 @@ function addBubble(role, content, error = false) {
   item.className = `message ${role}${error ? " error" : ""}`;
   const isGreeting = role === "assistant" && content === GREETING && !error;
   let messageContent = item;
-  if (isGreeting) {
-    item.classList.add("greeting");
+  // 모든 상담 답변에 얼굴을 붙이고, 첫 인사만 크게 보여줘요.
+  if (role === "assistant") {
+    if (isGreeting) item.classList.add("greeting");
     const face = document.createElement("img");
-    face.className = "greeting-portrait";
+    face.className = isGreeting ? "message-portrait greeting-portrait" : "message-portrait";
     face.alt = "샌들이 캐릭터";
     face.hidden = !portrait;
     if (portrait) face.src = portrait;
     item.append(face);
     messageContent = document.createElement("div");
-    messageContent.className = "greeting-content";
+    messageContent.className = "message-content";
     item.append(messageContent);
   }
   if (role === "assistant") {
@@ -231,7 +232,7 @@ function applyPortrait(face) {
   image.src = portrait;
   image.alt = "";
   profile.append(image);
-  document.querySelectorAll(".greeting-portrait").forEach(item => { item.src = portrait; item.hidden = false; });
+  document.querySelectorAll(".message-portrait").forEach(item => { item.src = portrait; item.hidden = false; });
   document.documentElement.style.setProperty("--character-color", face.color);
   document.documentElement.style.setProperty("--character-soft", face.color + "30");
 }
