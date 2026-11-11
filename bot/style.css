@@ -61,6 +61,14 @@ dialog label { display: block; margin: 24px 0 10px; font-weight: 700; }
 .message.greeting { max-width: 100%; display: flex; align-items: flex-start; gap: 14px; }
 .greeting-portrait { width: 104px; height: 104px; flex-shrink: 0; object-fit: contain; border-radius: 24px; background: white; }
 .face-settings { margin-top: 28px; padding-top: 26px; border-top: 1px solid #e9dfc9; }
+.review-settings { margin-top: 28px; padding-top: 26px; border-top: 1px solid #e9dfc9; }
+.review-toggle { width: 100%; margin-top: 16px; min-height: 56px; padding: 12px; background: #eee7d9; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; text-align: left; }
+.review-toggle > span:first-child { flex: 1; }
+.switch-track { width: 52px; height: 30px; flex-shrink: 0; border-radius: 20px; padding: 3px; background: #817969; }
+.switch-thumb { display: block; width: 24px; height: 24px; border-radius: 50%; background: white; }
+.review-toggle[aria-checked="true"] .switch-track { background: #41683a; }
+.review-toggle[aria-checked="true"] .switch-thumb { transform: translateX(22px); }
+.review-badge { font-size: 18px; font-weight: 400; white-space: nowrap; }
 textarea { resize: vertical; line-height: 1.65; }
 #face-create { white-space: normal; }
 #face-status { overflow-wrap: anywhere; }

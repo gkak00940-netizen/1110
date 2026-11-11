@@ -45,6 +45,13 @@
       <button id="team-save" type="submit" class="primary full">확인하고 저장</button>
       <button id="team-remove" type="button" class="secondary full">저장한 팀 코드 지우기</button>
     </form>
+    <section class="review-settings" aria-labelledby="review-title">
+      <h2 id="review-title">답변 검토</h2>
+      <button id="review-toggle" class="review-toggle" type="button" role="switch" aria-checked="true" aria-label="검토 AI 켜기" aria-describedby="review-status">
+        <span>검토 AI 켜기</span><span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span><span id="review-state" aria-hidden="true">켬</span>
+      </button>
+      <p id="review-status" class="help">답변을 보여주기 전에 한 번 더 확인해요.</p>
+    </section>
     <section class="face-settings" aria-labelledby="face-title">
       <h2 id="face-title">샌들이 얼굴 만들기</h2>
       <label for="character-prompt">캐릭터 설명</label>
