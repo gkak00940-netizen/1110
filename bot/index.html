@@ -11,20 +11,20 @@
 <body>
   <main class="chat-app" aria-label="샌드 고객 상담">
     <header class="header">
-      <span class="avatar" aria-hidden="true">🌾</span>
+      <span id="profile-avatar" class="avatar" aria-hidden="true">🌾</span>
       <div class="identity"><p class="eyebrow">샌드 AI 상담원</p><h1>샌들이</h1></div>
       <button id="settings-open" class="icon-button" type="button" aria-label="설정 열기">⚙️<span>설정</span></button>
     </header>
     <div class="intro"><span aria-hidden="true">🌱</span> 농산물에 담은 정성, 다정하게 전해드려요.</div>
     <section id="messages" class="messages" role="log" aria-label="대화 내용" aria-live="polite" aria-relevant="additions"></section>
-    <div id="typing" class="typing" role="status" hidden>샌들이가 입력 중…</div>
+    <div id="typing" class="typing" role="status" aria-label="입력 중…" hidden><span aria-hidden="true">입력 중<span class="typing-dots"><span class="typing-dot">.</span><span class="typing-dot">.</span><span class="typing-dot">.</span></span></span></div>
     <div class="bottom">
       <p class="quick-label">궁금한 내용을 골라보세요</p>
       <div class="quick-questions" aria-label="빠른 질문">
-        <button type="button" data-question="어떤 상품을 판매하나요?">🌾 판매 상품</button>
-        <button type="button" data-question="상품 가격이 궁금해요.">🧺 상품 가격</button>
-        <button type="button" data-question="영업시간이 어떻게 되나요?">🕘 영업시간</button>
-        <button type="button" data-question="연락처를 알려주세요.">☎️ 연락처</button>
+        <button type="button" data-question="어떤 상품을 판매하나요?">어떤 상품을 판매하나요?</button>
+        <button type="button" data-question="영업시간이 어떻게 되나요?">영업시간이 어떻게 되나요?</button>
+        <button type="button" data-question="연락처를 알려주세요.">연락처를 알려주세요.</button>
+        <button type="button" data-question="언제 어디로 문의하면 되나요?">언제 어디로 문의하면 되나요?</button>
       </div>
       <form id="chat-form" class="composer">
         <label class="visually-hidden" for="message-input">상담 메시지</label>
@@ -45,6 +45,14 @@
       <button id="team-save" type="submit" class="primary full">확인하고 저장</button>
       <button id="team-remove" type="button" class="secondary full">저장한 팀 코드 지우기</button>
     </form>
+    <section class="face-settings" aria-labelledby="face-title">
+      <h2 id="face-title">샌들이 얼굴 만들기</h2>
+      <label for="character-prompt">캐릭터 설명</label>
+      <textarea id="character-prompt" rows="4" maxlength="2000">현미누룽지 사이에 부드러운 노란 유자크림이 들어가 있음, 깔끔한 아이콘, 흰 배경, 글자 없음</textarea>
+      <p class="help">오리지널 캐릭터로 만들어요. 실제 인물·유명 캐릭터·다른 회사 로고는 그리지 않아요.</p>
+      <button id="face-create" type="button" class="primary full">얼굴 만들기</button>
+      <p id="face-status" role="status" aria-live="polite"></p>
+    </section>
   </dialog>
 </body>
 </html>

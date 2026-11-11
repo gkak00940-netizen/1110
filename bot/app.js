@@ -16,6 +16,11 @@ const FAQ = [
     question: "연락처를 알려주세요.",
     aliases: ["연락처", "전화번호", "전화번호가 어떻게 되나요?", "어디로 연락하면 되나요?"],
     answer: "연락처는 010-0000-0000이에요. 평일 오전 9시부터 오후 6시까지 문의해주세요."
+  },
+  {
+    question: "언제 어디로 문의하면 되나요?",
+    aliases: ["상담 시간과 연락처", "영업시간과 연락처를 알려주세요."],
+    answer: "평일 오전 9시부터 오후 6시까지 010-0000-0000으로 문의해주세요."
   }
 ];
 const SYSTEM_PROMPT = [
@@ -34,13 +39,17 @@ const SYSTEM_PROMPT = [
 ].join("\n");
 
 const API_BASE = "https://gy-ai.tkvkaosh.workers.dev";
-const KEYS = { team: "sand-chat-team", name: "sand-chat-team-name", history: "sand-chat-history" };
-const GREETING = "안녕하세요! 샌드 AI 상담원 샌들이예요. 🌾\n가공 농산물에 대해 궁금한 점을 편하게 물어봐 주세요.";
+const KEYS = { team: "sand-chat-team", name: "sand-chat-team-name", history: "sand-chat-history", portrait: "sand-chat-portrait", prompt: "sand-chat-character-prompt" };
+const GREETING = "안녕하세요! 샌드 상담원 샌들이예요. 주문 · 배송 · 보관 무엇이든 물어보세요";
+// 이전에 저장된 첫 인사도 새 문구로 바꿔 보여줘요. 손님과 나눈 대화는 그대로예요.
+const PREVIOUS_GREETING = "안녕하세요! 샌드 AI 상담원 샌들이예요. 🌾\n가공 농산물에 대해 궁금한 점을 편하게 물어봐 주세요.";
 const $ = id => document.getElementById(id);
 let busy = false;
 let verifying = false;
 let teamCode = "";
 let history = [];
+let portrait = "";
+let drawing = false;
 
 // 저장을 사용할 수 없는 환경에서도 화면은 열리며, 안내를 보여줘요.
 function storageWarning() {
@@ -62,17 +71,31 @@ function showConnection(text, kind = "") {
 function addBubble(role, content, error = false) {
   const item = document.createElement("article");
   item.className = `message ${role}${error ? " error" : ""}`;
+  const isGreeting = role === "assistant" && content === GREETING && !error;
+  let messageContent = item;
+  if (isGreeting) {
+    item.classList.add("greeting");
+    const face = document.createElement("img");
+    face.className = "greeting-portrait";
+    face.alt = "샌들이 캐릭터";
+    face.hidden = !portrait;
+    if (portrait) face.src = portrait;
+    item.append(face);
+    messageContent = document.createElement("div");
+    messageContent.className = "greeting-content";
+    item.append(messageContent);
+  }
   if (role === "assistant") {
     const name = document.createElement("p");
     name.className = "message-name";
     name.textContent = error ? "안내" : "샌들이";
-    item.append(name);
+    messageContent.append(name);
   }
   const bubble = document.createElement("div");
   bubble.className = "bubble";
   // 받은 답변도 글자로만 표시해 안전하게 보여줘요.
   bubble.textContent = content;
-  item.append(bubble);
+  messageContent.append(bubble);
   $("messages").append(item);
   $("messages").scrollTop = $("messages").scrollHeight;
 }
@@ -83,6 +106,7 @@ function addMessage(role, content, error = false) {
 }
 function setBusy(value) {
   busy = value;
+  document.querySelector(".chat-app").classList.toggle("waiting", value);
   $("send-button").disabled = value;
   $("typing").hidden = !value;
   $("messages").setAttribute("aria-busy", String(value));
@@ -129,9 +153,9 @@ function shortenAnswer(text) {
 }
 
 // 답을 끝없이 기다리지 않도록 연결에 제한 시간을 정해요.
-async function requestJson(url, options = {}) {
+async function requestJson(url, options = {}, timeoutMs = 45000) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 45000);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(url, { ...options, signal: controller.signal, credentials: "omit", cache: "no-store" });
     const data = await response.json();
@@ -147,6 +171,101 @@ async function requestJson(url, options = {}) {
     throw error;
   } finally { clearTimeout(timer); }
 }
+
+function showFaceStatus(text, kind = "") {
+  $("face-status").textContent = text;
+  $("face-status").className = kind;
+}
+
+// 다른 주소에서 읽어오지 않고, 받은 그림 내용만 사용해요.
+function isPortraitData(value) {
+  return typeof value === "string" && /^data:image\/(png|jpeg|webp|gif);base64,[a-z0-9+/\s]+=*$/i.test(value);
+}
+
+// 큰 그림도 256px 안으로 줄여서 저장 공간을 아껴요.
+function preparePortrait(source) {
+  return new Promise((resolve, reject) => {
+    if (!isPortraitData(source)) { reject(new Error("그림 주소를 읽지 못했어요. 다시 만들어주세요.")); return; }
+    const image = new Image();
+    const timer = setTimeout(() => reject(new Error("그림을 읽지 못했어요. 다시 만들어주세요.")), 10000);
+    image.onerror = () => { clearTimeout(timer); reject(new Error("그림을 읽지 못했어요. 다시 만들어주세요.")); };
+    image.onload = () => {
+      clearTimeout(timer);
+      try {
+        const scale = Math.min(1, 256 / Math.max(image.naturalWidth, image.naturalHeight));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        const context = canvas.getContext("2d");
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        // 흰 배경을 빼고 가장 많이 보이는 캐릭터 색을 찾아요.
+        const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+        const buckets = new Map();
+        for (let i = 0; i < pixels.length; i += 16) {
+          const rgb = [pixels[i], pixels[i + 1], pixels[i + 2]];
+          if (Math.max(...rgb) - Math.min(...rgb) < 25 || Math.min(...rgb) > 235) continue;
+          const key = rgb.map(value => Math.round(value / 40)).join(",");
+          const bucket = buckets.get(key) || { total: [0, 0, 0], count: 0 };
+          rgb.forEach((value, index) => { bucket.total[index] += value; });
+          bucket.count++;
+          buckets.set(key, bucket);
+        }
+        const main = [...buckets.values()].sort((a, b) => b.count - a.count)[0];
+        // 글자가 잘 보이도록 찾은 색을 밝게 조절해요.
+        const color = main ? "#" + main.total.map(value => Math.round(value / main.count * .4 + 255 * .6).toString(16).padStart(2, "0")).join("") : "#f2c544";
+        resolve({ image: canvas.toDataURL("image/jpeg", .85), color });
+      } catch { reject(new Error("그림을 준비하지 못했어요. 다시 만들어주세요.")); }
+    };
+    image.src = source;
+  });
+}
+
+function applyPortrait(face) {
+  portrait = face.image;
+  const profile = $("profile-avatar");
+  profile.textContent = "";
+  profile.classList.add("has-portrait");
+  const image = document.createElement("img");
+  image.src = portrait;
+  image.alt = "";
+  profile.append(image);
+  document.querySelectorAll(".greeting-portrait").forEach(item => { item.src = portrait; item.hidden = false; });
+  document.documentElement.style.setProperty("--character-color", face.color);
+  document.documentElement.style.setProperty("--character-soft", face.color + "30");
+}
+
+async function createFace() {
+  if (drawing || verifying) return;
+  if (!teamCode) { showFaceStatus("먼저 팀 코드를 확인하고 저장해주세요.", "error"); $("team-input").focus(); return; }
+  const description = $("character-prompt").value.trim();
+  if (!description) { showFaceStatus("캐릭터 설명을 입력해주세요.", "error"); $("character-prompt").focus(); return; }
+  drawing = true;
+  $("face-create").disabled = true;
+  $("face-create").textContent = "그리는 중… (10~40초)";
+  showFaceStatus("샌들이의 얼굴을 그리고 있어요. 잠시 기다려주세요.");
+  try {
+    const data = await requestJson(`${API_BASE}/image`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ team: teamCode, prompt: `${description}\n오리지널 캐릭터. 실제 인물, 유명 캐릭터, 다른 회사 로고는 그리지 마세요. 글자 없음.`, quality: "low" })
+    }, 90000);
+    const face = await preparePortrait(data.image);
+    // 대화나 팀 코드 저장 공간은 건드리지 않고 그림만 따로 저장해요.
+    try { localStorage.setItem(KEYS.portrait, JSON.stringify(face)); }
+    catch { throw new Error("그림을 저장할 공간이 부족하거나 저장이 차단되어 있어요. 브라우저 저장 설정을 확인해주세요."); }
+    applyPortrait(face);
+    try { localStorage.setItem(KEYS.prompt, description); } catch { /* 그림이 저장되면 설명 저장 실패와 관계없이 사용할 수 있어요. */ }
+    showFaceStatus("얼굴을 저장했어요. 다음에 열어도 그대로 보여요.", "success");
+  } catch (error) { showFaceStatus(error.message, "error"); }
+  finally { drawing = false; $("face-create").disabled = false; $("face-create").textContent = "얼굴 만들기"; }
+}
+
+$("face-create").addEventListener("click", createFace);
+$("character-prompt").addEventListener("input", () => {
+  try { localStorage.setItem(KEYS.prompt, $("character-prompt").value); } catch { /* 기존 대화 저장은 계속 사용할 수 있어요. */ }
+});
 
 async function sendMessage(text) {
   text = text.trim();
@@ -235,5 +354,18 @@ try {
   const saved = JSON.parse(readStored(KEYS.history) || "[]");
   if (Array.isArray(saved)) history = saved.filter(item => item && ["user", "assistant"].includes(item.role) && typeof item.content === "string").map(item => ({ role: item.role, content: item.content, error: item.error === true }));
 } catch { history = []; }
+if (history[0] && history[0].role === "assistant" && !history[0].error && history[0].content === PREVIOUS_GREETING) {
+  history[0].content = GREETING;
+  saveHistory();
+}
 if (history.length) history.forEach(item => addBubble(item.role, item.content, item.error));
 else addMessage("assistant", GREETING);
+// 저장된 그림이 손상되었으면 기존 이모지를 그대로 보여줘요.
+const savedPrompt = readStored(KEYS.prompt);
+if (savedPrompt) $("character-prompt").value = savedPrompt;
+try {
+  const savedPortrait = JSON.parse(readStored(KEYS.portrait) || "null");
+  if (savedPortrait && isPortraitData(savedPortrait.image)) {
+    preparePortrait(savedPortrait.image).then(applyPortrait).catch(() => showFaceStatus("저장된 그림을 읽지 못했어요. 얼굴을 다시 만들어주세요.", "error"));
+  }
+} catch { showFaceStatus("저장된 그림을 읽지 못했어요. 얼굴을 다시 만들어주세요.", "error"); }
