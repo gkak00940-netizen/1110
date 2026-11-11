@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2c544">
+  <title>샌드 AI 상담원 샌들이</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="chat-app" aria-label="샌드 고객 상담">
+    <header class="header">
+      <span class="avatar" aria-hidden="true">🌾</span>
+      <div class="identity"><p class="eyebrow">샌드 AI 상담원</p><h1>샌들이</h1></div>
+      <button id="settings-open" class="icon-button" type="button" aria-label="설정 열기">⚙️<span>설정</span></button>
+    </header>
+    <div class="intro"><span aria-hidden="true">🌱</span> 농산물에 담은 정성, 다정하게 전해드려요.</div>
+    <section id="messages" class="messages" role="log" aria-label="대화 내용" aria-live="polite" aria-relevant="additions"></section>
+    <div id="typing" class="typing" role="status" hidden>샌들이가 입력 중…</div>
+    <div class="bottom">
+      <p class="quick-label">궁금한 내용을 골라보세요</p>
+      <div class="quick-questions" aria-label="빠른 질문">
+        <button type="button" data-question="어떤 상품을 판매하나요?">🌾 판매 상품</button>
+        <button type="button" data-question="상품 가격이 궁금해요.">🧺 상품 가격</button>
+        <button type="button" data-question="영업시간이 어떻게 되나요?">🕘 영업시간</button>
+        <button type="button" data-question="연락처를 알려주세요.">☎️ 연락처</button>
+      </div>
+      <form id="chat-form" class="composer">
+        <label class="visually-hidden" for="message-input">상담 메시지</label>
+        <input id="message-input" type="text" placeholder="궁금한 내용을 적어주세요" autocomplete="off" maxlength="4000" enterkeyhint="send">
+        <button id="send-button" class="primary" type="submit">보내기 <span aria-hidden="true">↗</span></button>
+      </form>
+      <p id="storage-notice" class="footnote">대화는 이 브라우저에 자동으로 저장돼요.</p>
+    </div>
+  </main>
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <form id="settings-form">
+      <div class="dialog-heading"><h2 id="settings-title">상담 연결 설정</h2><button id="settings-close" type="button" class="icon-button" aria-label="설정 닫기">✕</button></div>
+      <p>팀 코드를 입력하면 샌들이와 대화할 수 있어요.</p>
+      <label for="team-input">팀 코드</label>
+      <input id="team-input" type="password" placeholder="팀 코드를 입력해주세요" autocomplete="off" spellcheck="false" required>
+      <p class="help">팀 코드는 이 브라우저에만 저장돼요. 공용 컴퓨터에서는 사용 후 지워주세요.</p>
+      <p id="connection-status" role="status" aria-live="polite">팀 코드를 연결해주세요.</p>
+      <button id="team-save" type="submit" class="primary full">확인하고 저장</button>
+      <button id="team-remove" type="button" class="secondary full">저장한 팀 코드 지우기</button>
+    </form>
+  </dialog>
+</body>
+</html>
