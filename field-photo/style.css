@@ -60,4 +60,8 @@ dialog::backdrop { background:#0009; }
 #large-photo { display:block; width:100%; max-height:65dvh; object-fit:contain; margin-top:18px; }
 #large-caption { white-space:pre-wrap; overflow-wrap:anywhere; }
 .dialog-actions { display:flex; flex-direction:column; gap:12px; }
+.install { margin-top:24px; }
+.install button { width:100%; }
+/* 설치한 앱으로 열면 앱 목록으로 돌아가는 링크는 숨겨요. */
+@media(display-mode:standalone) { .back { display:none; } }
 @media(max-width:600px) { main { padding:20px 14px; } h1 { font-size:30px; } header p { font-size:18px; } .card { padding:22px 18px; } .site-form { flex-direction:column; align-items:stretch; gap:12px; } .photos { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } .photo { padding:8px; } .photo-open img { height:140px; } .camera-actions { flex-direction:column; } .album-tools>button { flex:1; } .storage-note { padding:20px; } dialog { padding:18px; } }

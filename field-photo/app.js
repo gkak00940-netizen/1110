@@ -270,3 +270,20 @@ async function initialize() {
   } catch { db = null; controls(); notice('사진 보관함을 열지 못했어요. 일반 크롬 창에서 다시 열어 주세요. 비공개 모드에서는 보관이 제한될 수 있어요.', true); }
 }
 initialize();
+
+// 휴대폰 홈 화면에 앱으로 설치하고, 인터넷이 약해도 화면이 열리게 해요.
+if ('serviceWorker' in navigator && window.isSecureContext) {
+  navigator.serviceWorker.register('sw.js').catch(() => { /* 설치 기능이 없어도 앱은 그대로 써요. */ });
+}
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault(); installPrompt = event; $('install-card').hidden = false;
+});
+$('install-app').addEventListener('click', async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  const { outcome } = await installPrompt.userChoice;
+  installPrompt = null; $('install-card').hidden = true;
+  if (outcome === 'accepted') notice('앱을 설치하고 있어요. 홈 화면의 현장 사진함 아이콘으로 열어 주세요.');
+});
+window.addEventListener('appinstalled', () => { $('install-card').hidden = true; });
