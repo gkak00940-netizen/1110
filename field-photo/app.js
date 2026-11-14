@@ -33,7 +33,7 @@ function dateLabel(value) {
 }
 
 function savePrefs() {
-  try { localStorage.setItem(PREF_KEY, JSON.stringify({ site:currentSite, quality:$('quality').value, memo:$('photo-memo').value })); }
+  try { localStorage.setItem(PREF_KEY, JSON.stringify({ site:currentSite })); }
   catch { notice('설정을 저장하지 못했어요. 사진 보관 상태는 아래에서 확인해 주세요.', true); }
 }
 
@@ -80,8 +80,6 @@ function controls() {
   $('site').disabled = busy || pendingCamera;
   $('site-name').disabled = busy || pendingCamera || !db;
   $('add-site').disabled = busy || pendingCamera || !db;
-  $('quality').disabled = busy;
-  $('photo-memo').disabled = busy;
   const count = selectedPhotos().length;
   $('selection-count').textContent = `선택한 사진 ${count}장`;
   ['share', 'copy-caption', 'delete-selected', 'clear-selection'].forEach(id => { $(id).disabled = busy || !count; });
@@ -164,8 +162,6 @@ $('site-form').addEventListener('submit', async event => {
   finally { busy = false; renderPhotos(); }
 });
 $('site').addEventListener('change', () => { currentSite = $('site').value; selected.clear(); savePrefs(); renderPhotos(); });
-$('quality').addEventListener('change', savePrefs);
-$('photo-memo').addEventListener('input', savePrefs);
 $('camera').addEventListener('loadeddata', controls);
 
 $('start-camera').addEventListener('click', async () => {
@@ -193,13 +189,14 @@ window.addEventListener('pagehide', stopCamera);
 $('capture').addEventListener('click', async () => {
   if (!stream || busy || !$('camera').videoWidth) return;
   busy = true; controls(); notice('사진을 보관하고 있어요…');
-  const site = currentSite; const memo = $('photo-memo').value.trim(); const created = Date.now();
+  const site = currentSite; const memo = ''; const created = Date.now();
   try {
-    const video = $('camera'); const maxEdge = $('quality').value === 'clear' ? 2560 : 1600;
+    // 보관 크기 선택 없이 자동으로 사진 용량을 줄여요.
+    const video = $('camera'); const maxEdge = 1600;
     const ratio = Math.min(1, maxEdge / Math.max(video.videoWidth, video.videoHeight));
     const canvas = document.createElement('canvas'); canvas.width = Math.round(video.videoWidth * ratio); canvas.height = Math.round(video.videoHeight * ratio);
     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', $('quality').value === 'clear' ? 0.9 : 0.8));
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
     if (!blob) throw new Error('사진을 만들지 못했어요.');
     const photo = { id:crypto.randomUUID(), site, memo, created, blob, width:canvas.width, height:canvas.height };
     await write('photos', store => store.add(photo)); photos.push(photo);
@@ -265,8 +262,6 @@ async function initialize() {
     try {
       const prefs = JSON.parse(localStorage.getItem(PREF_KEY));
       if (sites.some(site => site.id === prefs?.site)) currentSite = prefs.site;
-      if (prefs?.quality === 'clear') $('quality').value = 'clear';
-      if (typeof prefs?.memo === 'string') $('photo-memo').value = prefs.memo.slice(0, 120);
     } catch { /* 설정을 읽지 못해도 이미 보관한 사진은 다시 보여 줘요. */ }
     if (!currentSite && sites.length) currentSite = sites[0].id;
     renderSites(); renderPhotos();
