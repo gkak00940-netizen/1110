@@ -82,7 +82,7 @@ function controls() {
   $('add-site').disabled = busy || pendingCamera || !db;
   const count = selectedPhotos().length;
   $('selection-count').textContent = `선택한 사진 ${count}장`;
-  ['share', 'copy-caption', 'delete-selected', 'clear-selection'].forEach(id => { $(id).disabled = busy || !count; });
+  ['share', 'keep-selected', 'delete-selected', 'clear-selection'].forEach(id => { $(id).disabled = busy || !count; });
   $('select-batch').disabled = busy || !currentPhotos().length;
   document.querySelectorAll('.photo input').forEach(input => { input.disabled = busy; });
 }
@@ -228,9 +228,10 @@ $('share').addEventListener('click', async () => {
     notice(error.name === 'AbortError' ? '공유를 취소했어요. 사진은 그대로 보관돼 있어요.' : '공유하지 못했어요. 선택한 사진 수를 줄여 다시 시도해 주세요.', error.name !== 'AbortError');
   } finally { busy = false; controls(); }
 });
-$('copy-caption').addEventListener('click', async () => {
-  try { await navigator.clipboard.writeText(captionText(selectedPhotos())); notice('현장 이름과 사진 설명을 복사했어요. 카카오톡에 붙여 넣어 주세요.'); }
-  catch { notice('설명을 복사하지 못했어요. 브라우저에서 복사를 허용했는지 확인해 주세요.', true); }
+$('keep-selected').addEventListener('click', () => {
+  selected.clear();
+  renderPhotos();
+  notice('사진을 그대로 유지했어요. 선택만 해제했어요.');
 });
 
 $('delete-selected').addEventListener('click', () => {

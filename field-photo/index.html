@@ -33,12 +33,12 @@
       <div class="album-tools"><button type="button" id="select-batch" disabled>최근 사진 10장 선택</button><button type="button" id="clear-selection" disabled>선택 해제</button></div>
       <p id="empty" class="empty">아직 사진이 없어요.<br>사진을 찍으면 선택한 현장에 모여요.</p>
       <div id="photos" class="photos"></div>
-      <div class="share-panel"><strong id="selection-count">선택한 사진 0장</strong><button type="button" id="share" class="primary" disabled>공유 화면 열기 · 카카오톡 선택</button><p class="help">한 번에 최대 10장씩 선택해요. 공유 화면에서 카카오톡과 보낼 대화방을 직접 고르세요.</p><button type="button" id="copy-caption" disabled>선택한 사진 설명 복사</button><button type="button" id="delete-selected" class="danger" disabled>수신 확인 후 선택한 사진 지우기</button></div>
+      <div class="share-panel"><strong id="selection-count">선택한 사진 0장</strong><button type="button" id="share" class="primary" disabled>공유 화면 열기 · 카카오톡 선택</button><p class="help">한 번에 최대 10장씩 선택해요. 공유 화면에서 카카오톡과 보낼 대화방을 직접 고르세요.</p><div class="photo-decisions"><button type="button" id="delete-selected" class="danger" disabled>삭제</button><button type="button" id="keep-selected" disabled>유지</button></div></div>
     </section>
     <aside class="storage-note"><h2>휴대폰 공간도 함께 챙겨요</h2><p>사진은 이 휴대폰의 이 브라우저에만 보관돼요. 갤러리에 없어도 휴대폰 공간을 사용해요.</p><p>회사에서 사진을 받은 것을 확인한 뒤 지워 주세요. 브라우저 데이터 삭제나 휴대폰 분실에 대비해 중요한 사진은 꼭 회사에 보내 두세요.</p><p>공유 화면을 열었다고 회사에 전송된 것은 아니에요. 사진은 자동으로 지우지 않아요.</p></aside>
     <footer>현장을 고르고, 찍고, 모아서 보내기.</footer>
   </main>
   <dialog id="photo-dialog"><div class="dialog-top"><h2 id="photo-title">사진 크게 보기</h2><button type="button" id="close-photo">닫기</button></div><img id="large-photo" alt="선택한 현장 사진"><p id="large-caption"></p></dialog>
-  <dialog id="delete-dialog"><h2>회사에서 받았는지 확인하셨나요?</h2><p id="delete-description"></p><p>지운 사진은 되돌릴 수 없어요. 회사에 보낸 사진에는 영향을 주지 않아요.</p><div class="dialog-actions"><button type="button" id="cancel-delete">그대로 두기</button><button type="button" id="confirm-delete" class="danger">받은 것을 확인했어요 · 지우기</button></div></dialog>
+  <dialog id="delete-dialog"><h2>회사에서 받았는지 확인하셨나요?</h2><p id="delete-description"></p><p>지운 사진은 되돌릴 수 없어요. 회사에 보낸 사진에는 영향을 주지 않아요.</p><div class="dialog-actions"><button type="button" id="cancel-delete">유지</button><button type="button" id="confirm-delete" class="danger">삭제</button></div></dialog>
 </body>
 </html>

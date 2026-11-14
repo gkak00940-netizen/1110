@@ -48,6 +48,7 @@ video { width:100%; max-height:480px; display:block; object-fit:contain; }
 .share-panel { border-top:1px solid var(--line); margin-top:24px; padding-top:24px; display:flex; flex-direction:column; gap:14px; }
 .share-panel strong { font-size:22px; }
 .share-panel .help { margin:0; }
+.photo-decisions { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .danger { color:#a52222; border-color:#d6a29a; background:#fff4f1; }
 .storage-note { border:1px solid var(--line); padding:24px; border-radius:12px; font-size:18px; line-height:1.8; }
 .storage-note h2 { font-size:22px; }
