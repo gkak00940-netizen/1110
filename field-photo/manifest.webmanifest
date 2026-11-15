@@ -1,7 +1,7 @@
 {
-  "name": "현장 사진함",
-  "short_name": "현장 사진함",
-  "description": "현장별로 사진을 찍고 모아서 카카오톡으로 보내는 앱",
+  "name": "현장 사진",
+  "short_name": "현장 사진",
+  "description": "현장 사진을 찍고 카카오톡·메시지·다른 앱으로 보내는 앱",
   "lang": "ko",
   "id": "./",
   "start_url": "./",
